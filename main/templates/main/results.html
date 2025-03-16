@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תצוגת נתונים</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 1000px;
+            margin-top: 50px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        .table th, .table td {
+            text-align: right;
+            direction: rtl;
+            vertical-align: middle;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- ניווט עליון -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <!-- הלוגו בצד שמאל -->
+            <a class="navbar-brand me-auto" href="{% url 'home' %}">Optimum</a>
+
+            <!-- כפתור תפריט לטלפונים -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- תפריט הניווט -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Welcome {{ user.username }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger text-white px-3" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container text-center">
+        <h2 class="mb-4">🔍 תצוגת הנתונים</h2>
+        <hr>
+        <h4>בטבלה מתחת ניתן לראות את ההזמנות עבור התאריך המיועד,מדובר על הזמנות כוללות לכל לקוח ליום המיועד</h4>
+        <hr>
+        {% if table %}
+            <div class="table-container">
+                {{ table | safe }}
+            </div>
+        {% else %}
+            <p class="text-danger">⚠️ אין נתונים להצגה.</p>
+        {% endif %}
+
+        <a href="{% url 'cluster_results' %}" class="btn btn-primary mt-4">📊 מעבר לניתוח חלוקת ההזמנות למשאיות</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
