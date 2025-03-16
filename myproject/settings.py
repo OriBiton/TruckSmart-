@@ -31,12 +31,15 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 
+
+
+
+
 import os
-from dotenv import load_dotenv
 
-load_dotenv()  # טוען משתנים מהקובץ `.env`
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "NOT SET")
+print(f"🔹 GOOGLE_API_KEY from env: {GOOGLE_API_KEY}")  # Debugging
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY","")
 
 # Application definition
 
