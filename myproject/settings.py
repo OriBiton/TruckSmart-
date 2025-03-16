@@ -37,7 +37,8 @@ CSRF_TRUSTED_ORIGINS = [
 
 import os
 
-GOOGLE_API_KEY = 'AIzaSyCpORskjO_VMPZ1dND8R6YxSXeaUA-Obo0'
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "DEFAULT_IF_NOT_FOUND")
+
 print(f"🔹 GOOGLE_API_KEY from env: {GOOGLE_API_KEY}")  # Debugging
 
 
