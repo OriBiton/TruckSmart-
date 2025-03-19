@@ -29,7 +29,7 @@ ALLOWED_HOSTS = ["trucksmart-production.up.railway.app"]
 CSRF_TRUSTED_ORIGINS = [
     "https://trucksmart-production.up.railway.app",
 ]
-SECURE_SSL_REDIRECT = True
+
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_HSTS_SECONDS = 31536000
