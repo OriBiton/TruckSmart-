@@ -27,7 +27,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
-    "*",
+    "https://web-production-50c34e.up.railway.app",
 ]
 
 SESSION_COOKIE_SECURE = True
