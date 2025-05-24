@@ -25,9 +25,9 @@ SECRET_KEY = 'django-insecure-qe7x44&r+rv4tiocyja((u+l-=fb2!m1z=z4@5na&y8&@5qcef
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["trucksmart-production.up.railway.app"]
+ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
-    "https://trucksmart-production.up.railway.app",
+    "*",
 ]
 
 SESSION_COOKIE_SECURE = True
