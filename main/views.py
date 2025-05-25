@@ -161,6 +161,8 @@ def cluster_routes_view(request):
     data_json = request.session.get('order_filtered')
     if not data_json:
         return render(request, "main/error.html", {"message": "⚠️ אין נתונים בסשן. יש להעלות קובץ קודם."})
+    api_key = os.getenv("GOOGLE_API_KEY")
+    print("🔐 Key Loaded?", bool(api_key), "| First 5 chars:", api_key[:5] if api_key else "NONE")
 
     try:
         # שחזור ה-DataFrame מסשן
@@ -195,3 +197,56 @@ def cluster_routes_view(request):
     except Exception as e:
         print(f"⚠️ שגיאה בטעינת הנתונים מהסשן: {e}")
         return render(request, "main/error.html", {"message": "⚠️ שגיאה בטעינת הנתונים, נסה שוב."})
+
+from io import BytesIO
+from django.http import HttpResponse
+import pandas as pd
+
+from django.http import HttpResponse
+import pandas as pd
+
+def download_excel_view(request, cluster_id):
+    print("✅ download_excel_view was called")
+    print("🔎 Cluster ID:", cluster_id)
+
+    data_json = request.session.get('order_filtered')
+    print("🧪 יש order_filtered?", bool(data_json))
+
+    data_types = request.session.get('data_types_order_filtered')
+    print("🧪 יש data_types?", bool(data_types))
+
+    if not data_json:
+        return HttpResponse("אין נתונים להורדה", status=400)
+
+    try:
+        df = pd.read_json(data_json)
+    except Exception as e:
+        print("❌ שגיאה ב־read_json:", e)
+        return HttpResponse("שגיאה בטעינת הנתונים", status=500)
+
+    try:
+        for col, dtype_str in data_types.items():
+            df[col] = df[col].astype(dtype_str)
+    except Exception as e:
+        print("❌ שגיאה בהמרת טיפוס:", e)
+
+    try:
+        df_cluster = df[df['Cluster'] == int(cluster_id)].copy()
+        df_cluster.insert(0, "מספר תחנה", range(1, len(df_cluster) + 1))
+    except Exception as e:
+        print("❌ שגיאה בעיבוד הקלאסטר:", e)
+        return HttpResponse("שגיאה בעיבוד קובץ", status=500)
+
+    try:
+        from io import BytesIO
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df_cluster.to_excel(writer, index=False)
+
+        output.seek(0)
+        response = HttpResponse(output.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename=cluster_{cluster_id}_orders.xlsx'
+        return response
+    except Exception as e:
+        print("❌ שגיאה ביצירת הקובץ:", e)
+        return HttpResponse("שגיאה ביצירת קובץ אקסל", status=500)

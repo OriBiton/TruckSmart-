@@ -202,28 +202,12 @@ def process_orders_by_date(order_df):
 
 
 def generate_maps(order_filtered):
-    """
-    פונקציה ליצירת שתי מפות:
-    1. מפה בסיסית עם כלל הנקודות.
-    2. מפה עם צבעים לפי קלאסטרים.
-    
-    :param order_filtered: DataFrame עם נתוני ההזמנות (Latitude, Longitude, Cluster)
-    :return: קוד HTML של המפות להצגה ב-Django
-    """
-    
-
-    # יצירת מפה שנייה עם צבעים לפי קלאסטרים
     map2 = folium.Map(location=[32.0853, 34.7818], zoom_start=12)
 
-    # הוספת כותרת למפה
-    folium.Marker([33.2, 34.7818], popup="מפה לפי קלאסטרים").add_to(map2)
-
-    # צבעים מותאמים אישית לכל קלאסטר
     cluster_colors = {
         cluster: color for cluster, color in zip(order_filtered['Cluster'].unique(), ['red', 'blue', 'green', 'purple', 'orange'])
     }
 
-    # הוספת כל נקודה עם צבעים לפי קלאסטר
     for _, row in order_filtered.iterrows():
         cluster_color = cluster_colors.get(row['Cluster'], 'gray')
 
@@ -232,11 +216,29 @@ def generate_maps(order_filtered):
             radius=5,
             color=cluster_color,
             fill=True,
-            fill_color=cluster_color
+            fill_color=cluster_color,
+            fill_opacity=0.8
         ).add_to(map2)
 
-    # המרות ל-HTML עבור Django
-    
-    map2_html = map2._repr_html_()
+    # 💡 הוספת מקרא צבעים מותאם
+    legend_html = '''
+     <div style="
+         position: fixed; 
+         bottom: 50px; left: 50px; width: 180px; height: auto; 
+         background-color: white; 
+         border:2px solid grey; z-index:9999; font-size:14px;
+         padding: 10px;
+         ">
+         <b>🧭 מקרא צבעים:</b><br>
+    '''
 
-    return  map2_html
+    for cluster in sorted(cluster_colors.keys()):
+        color = cluster_colors[cluster]
+
+        legend_html += f'<i style="background:{color};width:10px;height:10px;display:inline-block;border-radius:50%;margin-right:6px;"></i> נהג {cluster}<br>'
+
+    legend_html += '</div>'
+
+    map2.get_root().html.add_child(folium.Element(legend_html))
+
+    return map2._repr_html_()
